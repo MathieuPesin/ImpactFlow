@@ -1,0 +1,7 @@
+entreprise,annee,scope,categorie,emissions_co2
+"Entreprise A",2023,1,"Consommation de carburant",1250.5
+"Entreprise A",2023,2,"Électricité",850.3
+"Entreprise A",2023,3,"Transport de marchandises",2100.8
+"Entreprise B",2023,1,"Véhicules de société",980.2
+"Entreprise B",2023,2,"Chauffage",1500.4
+"Entreprise B",2023,3,"Déplacements professionnels",750.6
