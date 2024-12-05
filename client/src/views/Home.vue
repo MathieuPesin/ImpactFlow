@@ -5,16 +5,8 @@
   </div>
 </template>
 
-<script>
-import { defineComponent } from 'vue'
-import SankeyDiagram from '@/components/SankeyDiagram.vue'
-
-export default defineComponent({
-  name: 'Home',
-  components: {
-    SankeyDiagram
-  }
-})
+<script setup>
+import SankeyDiagram from '@/components/SankeyDiagram.vue';
 </script>
 
 <style scoped>

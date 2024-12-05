@@ -9,6 +9,7 @@ import './style.css'
 // Import des vues
 import Home from './views/Home.vue'
 import Upload from './views/Upload.vue'
+import EmissionsView from './views/EmissionsView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -22,6 +23,11 @@ const router = createRouter({
       path: '/upload',
       name: 'Upload',
       component: Upload
+    },
+    {
+      path: '/emissions',
+      name: 'Emissions',
+      component: EmissionsView
     }
   ]
 })

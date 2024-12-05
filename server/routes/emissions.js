@@ -5,6 +5,7 @@ const { supabase } = require('../utils/supabaseClient');
 // Route pour récupérer les données pour le diagramme Sankey
 router.get('/sankey', async (req, res) => {
   try {
+    console.log('Fetching emissions data from Supabase...');
     // Récupérer toutes les émissions
     const { data: emissions, error } = await supabase
       .from('emissions')
@@ -16,10 +17,14 @@ router.get('/sankey', async (req, res) => {
       return res.status(500).json({ error: 'Failed to fetch emissions data' });
     }
 
+    console.log('Raw emissions data:', emissions);
+
     if (!emissions || emissions.length === 0) {
       console.log('No emissions data found');
       return res.json({ nodes: [], links: [] });
     }
+
+    console.log(`Found ${emissions.length} emission records`);
 
     // Transformer les données pour le format Sankey
     const nodes = [];
@@ -34,7 +39,14 @@ router.get('/sankey', async (req, res) => {
       nodeMap.set(company, nodeIndex++);
     });
 
-    // Ajouter les nœuds de scope (deuxième colonne)
+    // Ajouter les nœuds de catégorie (deuxième colonne)
+    const categories = [...new Set(emissions.map(e => e.category))];
+    categories.forEach(category => {
+      nodes.push({ name: category });
+      nodeMap.set(category, nodeIndex++);
+    });
+
+    // Ajouter les nœuds de scope (troisième colonne)
     const scopes = [1, 2, 3];
     scopes.forEach(scope => {
       const scopeName = `Scope ${scope}`;
@@ -42,14 +54,7 @@ router.get('/sankey', async (req, res) => {
       nodeMap.set(scopeName, nodeIndex++);
     });
 
-    // Ajouter les nœuds de catégorie (troisième colonne)
-    const categories = [...new Set(emissions.map(e => e.category))];
-    categories.forEach(category => {
-      nodes.push({ name: category });
-      nodeMap.set(category, nodeIndex++);
-    });
-
-    // Créer les liens (entreprise -> scope -> catégorie)
+    // Créer les liens (entreprise -> catégorie -> scope)
     const uniqueEmissions = emissions.reduce((acc, emission) => {
       const key = `${emission.company_name}-${emission.scope}-${emission.category}`;
       if (!acc[key]) {
@@ -62,21 +67,21 @@ router.get('/sankey', async (req, res) => {
 
     Object.values(uniqueEmissions).forEach(emission => {
       const companyIndex = nodeMap.get(emission.company_name);
-      const scopeIndex = nodeMap.get(`Scope ${emission.scope}`);
       const categoryIndex = nodeMap.get(emission.category);
+      const scopeIndex = nodeMap.get(`Scope ${emission.scope}`);
       
-      if (companyIndex !== undefined && scopeIndex !== undefined && categoryIndex !== undefined) {
-        // Lien entreprise -> scope
+      if (companyIndex !== undefined && categoryIndex !== undefined && scopeIndex !== undefined) {
+        // Lien entreprise -> catégorie
         links.push({
           source: companyIndex,
-          target: scopeIndex,
+          target: categoryIndex,
           value: emission.value
         });
         
-        // Lien scope -> catégorie
+        // Lien catégorie -> scope
         links.push({
-          source: scopeIndex,
-          target: categoryIndex,
+          source: categoryIndex,
+          target: scopeIndex,
           value: emission.value
         });
       }
@@ -109,6 +114,27 @@ router.post('/', async (req, res) => {
   } catch (error) {
     console.error('Error adding emission:', error);
     res.status(500).json({ error: 'Failed to add emission data' });
+  }
+});
+
+// Route pour supprimer toutes les données
+router.delete('/all', async (req, res) => {
+  try {
+    const { error } = await supabase
+      .from('emissions')
+      .delete()
+      .neq('id', 0); // Supprime toutes les lignes
+
+    if (error) {
+      console.error('Error deleting all emissions:', error);
+      return res.status(500).json({ error: 'Failed to delete emissions data' });
+    }
+
+    console.log('All emissions data deleted successfully');
+    res.json({ message: 'All emissions data deleted successfully' });
+  } catch (error) {
+    console.error('Error in /delete/all route:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 

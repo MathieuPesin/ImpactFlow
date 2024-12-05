@@ -1,19 +1,22 @@
 <template>
   <div class="emissions-view">
-    <h2>Visualisation des Émissions CO2</h2>
-    <sankey-diagram />
+    <h1>Visualisation des Émissions</h1>
+    <SankeyDiagram />
+    <ExportOptions />
   </div>
 </template>
 
 <script>
-import SankeyDiagram from '@/components/SankeyDiagram.vue'
+import SankeyDiagram from '../components/SankeyDiagram.vue';
+import ExportOptions from '../components/ExportOptions.vue';
 
 export default {
   name: 'EmissionsView',
   components: {
-    SankeyDiagram
+    SankeyDiagram,
+    ExportOptions
   }
-}
+};
 </script>
 
 <style scoped>
@@ -21,8 +24,8 @@ export default {
   padding: 20px;
 }
 
-h2 {
-  margin-bottom: 20px;
-  color: #2c3e50;
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
 }
 </style>

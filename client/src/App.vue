@@ -1,9 +1,11 @@
 <template>
-  <div id="app">
-    <nav>
-      <router-link to="/">Accueil</router-link> |
-      <router-link to="/upload">Upload</router-link>
-    </nav>
+  <div class="app-container">
+    <el-menu mode="horizontal" router>
+      <el-menu-item index="/">Accueil</el-menu-item>
+      <el-menu-item index="/upload">Import des données</el-menu-item>
+      <el-menu-item index="/emissions">Visualisation</el-menu-item>
+    </el-menu>
+    
     <router-view></router-view>
   </div>
 </template>
@@ -17,6 +19,15 @@ export default defineComponent({
 </script>
 
 <style>
+.app-container {
+  min-height: 100vh;
+  background-color: #f5f7fa;
+}
+
+.el-menu {
+  margin-bottom: 20px;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
